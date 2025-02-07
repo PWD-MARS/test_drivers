@@ -1,10 +1,15 @@
+# Write to DB
 test_wr <- function(conn_args, text, platform, driver, length) {
+  # Query
   query <- write_q(text, platform, driver, length)
+  # Connection to DB
   conn <- do.call(dbConnect, conn_args)
+  # Send to DB and return test_id
   test_id <- dbGetQuery(conn, query)
-  glimpse(test_id)
+  # Return query to updateTextAreaInput
   get_query <- get_q(test_id)
   results <- dbGetQuery(conn, get_query)
+  # Disconnect from DB
   dbDisconnect(conn)
   results
 }
