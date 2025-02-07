@@ -1,0 +1,12 @@
+name: test_drivers2
+title: test_drivers
+username: Jonathan.Bryant
+account: Jonathan.Bryant
+server: pwdrstudio.phila.gov
+hostUrl: https://pwdrstudio.phila.gov/__api__
+appId: 448
+bundleId: 2777
+url: https://pwdrstudio.phila.gov/content/9c78b018-bb27-4cb3-8e7a-8af7703b9aad/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
