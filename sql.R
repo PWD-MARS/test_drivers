@@ -19,3 +19,21 @@ test_update <- function(conn_args, test_id, char_nums) {
   dbGetQuery(conn, query)
   dbDisconnect
 }
+
+write_q <- function(text_block, platform, driver, length) {
+  df <- tribble(
+    ~type_text, ~type_varchar_default, ~type_varchar, ~platform, ~driver, ~requested_length,
+    text_block, text_block, text_block, platform, driver, length
+  )
+  fields <- names(df)
+  query <- sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING test_id",
+                   "tbl_test_drivers",
+                   paste(fields, collapse = ", "),
+                   paste("'", df, "'", collapse = ", ", sep = "") 
+  )
+}
+
+get_q <- function(test_id) {
+  query <- sprintf("SELECT * FROM tbl_test_drivers WHERE test_id = %s",
+                   test_id)
+}
