@@ -22,13 +22,15 @@ rpost_args <- list(
 # conn <- do.call(dbConnect, rpost_args)
 # test <- dbGetQuery(conn, "SELECT * FROM public.tbl_liner_tests")
 
+source("test_wr.R")
+
 write_q <- function(text_block, platform, driver, length) {
   df <- tribble(
     ~type_text, ~type_varchar_default, ~type_varchar, ~platform, ~driver, ~requested_length,
     text_block, text_block, text_block, platform, driver, length
   )
   fields <- names(df)
-  query <- sprintf("INSERT INTO %s (%s) VALUES (%s)",
+  query <- sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING test_id",
                    "tbl_test_drivers",
                    paste(fields, collapse = ", "),
                    paste("'", df, "'", collapse = ", ", sep = "") 
@@ -36,7 +38,8 @@ write_q <- function(text_block, platform, driver, length) {
 }
 
 get_q <- function(test_id) {
-  
+  query <- sprintf("SELECT * FROM tbl_test_drivers WHERE test_id = %s",
+                   test_id)
 }
 
 test <- NULL
@@ -82,7 +85,7 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  configuration <- reactive({
+  config <- reactive({
     info <- tibble(
       "platform" = input$platform,
       "driver" = input$driver,
@@ -91,17 +94,22 @@ server <- function(input, output) {
   })
   
   observeEvent(input$submit, {
-    text_block <- strrep("Y", configuration()$length)
-    if (configuration()$driver == "ODBC") {
-      glimpse("Yay!")
+    text_block <- strrep("Y", config()$length)
+    if (config()$driver == "ODBC") {
+      query <- write_q(text_block, config()$platform, config()$driver, config()$length)
       conn <- do.call(dbConnect, odbc_args)
-      query <- write_q(text_block, configuration()$platform, configuration()$driver, configuration()$length)
       test_id <- dbGetQuery(conn, query)
+      glimpse(test_id)
+      get_query <- get_q(test_id)
+      results <- dbGetQuery(conn = conn, statement = get_query)
+      dbDisconnect(conn)
+
+      #updateTextAreaInput(inputId = text, value = )
+      test <<- results
     }
   })
   
   observeEvent(input$test, {
-    
     updateNumericInput(inputId = "text", value = stringr::str_length(input$text))
   })
    
