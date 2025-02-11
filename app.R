@@ -5,14 +5,16 @@ library(tibble)
 
 odbc_args <- list (
   drv = odbc(),
-  dsn = "mars14_datav2",
+  dsn = "Jon_sandbox",
   uid = Sys.getenv("shiny_uid"),
   pwd = Sys.getenv("shiny_pwd")
 )
+repos <- c(CRAN = "https://packagemanager.posit.co/cran/latest")
+options(repos = repos)
 
 # odbc_args <- list(odbc(),
 #           Driver = "PostgreSQL Unicode",
-#           Server = "PWDMARSDBS1.pwd.phila.local", 
+#           Server = "PWDMARSDBS1",
 #           port = 5434,
 #           Database = "Jon_sandbox",
 #           uid = Sys.getenv("shiny_uid"),
@@ -22,9 +24,9 @@ rpost_args <- list(
   drv = RPostgres::Postgres(),
   host = "PWDMARSDBS1",
   port = 5434,
-  dbname = "mars_data",
+  dbname = "Jon_sandbox",
   user= Sys.getenv("shiny_uid"),
-  password = Sys.getenv("pwd")
+  password = Sys.getenv("shiny_pwd")
 )
 
 # rpost_args <- list(RPostgres::Postgres(),
@@ -38,8 +40,11 @@ rpost_args <- list(
 # test <- dbGetQuery(conn, "SELECT * FROM public.tbl_liner_tests")
   
 # Define UI for application that draws a histogram
+
+source("sql.R")
 ui <- fluidPage(
-  absolutePanel(tags$h1("Test Drivers"),
+  tabsetPanel(
+    tabPanel("Test Drivers",
                 selectInput("platform",
                             label = "Platform",
                             choices = c("Windows",
@@ -73,8 +78,11 @@ ui <- fluidPage(
                 textAreaInput(inputId = "varchar_1000",
                               label = "Varchar 1000")
                 ),
-)
-
+  tabPanel("drivers",
+                verbatimTextOutput("drivers")
+          )
+      )
+  )
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   config <- reactive({
@@ -84,6 +92,10 @@ server <- function(input, output) {
       "driver" = input$driver,
       "length" = input$length
     )
+  })
+  
+  output$drivers <- renderPrint({
+    odbc::odbcListDrivers()
   })
   
   observeEvent(input$submit, {
@@ -98,7 +110,6 @@ server <- function(input, output) {
       updateTextAreaInput(inputId = "varchar_1000", value = test$type_varchar)
       # Lazy use of super alignment
       test_id <<- test$test_id
-
     }
     else {
       # Write to values to db and return test_id for ODBC
