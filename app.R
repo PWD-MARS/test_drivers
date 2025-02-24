@@ -5,7 +5,7 @@ library(tibble)
 
 odbc_args <- list (
   drv = odbc(),
-  dsn = "Jon_sandbox",
+  dsn = "mars14_datav2",
   uid = Sys.getenv("shiny_uid"),
   pwd = Sys.getenv("shiny_pwd")
 )
@@ -24,7 +24,7 @@ rpost_args <- list(
   drv = RPostgres::Postgres(),
   host = "PWDMARSDBS1",
   port = 5434,
-  dbname = "Jon_sandbox",
+  dbname = "mars_data",
   user= Sys.getenv("shiny_uid"),
   password = Sys.getenv("shiny_pwd")
 )
