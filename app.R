@@ -29,15 +29,6 @@ rpost_args <- list(
   password = Sys.getenv("shiny_pwd")
 )
 
-# rpost_args <- list(RPostgres::Postgres(),
-#                       host = "PWDMARSDBS1.pwd.phila.local",
-#                       port = 5434,
-#                       dbname = "Jon_sandbox",
-#                       user = Sys.getenv("shiny_uid"),
-#                       password = Sys.getenv("shiny_pwd"))
-
-# conn <- do.call(dbConnect, odbc_args)
-# test <- dbGetQuery(conn, "SELECT * FROM public.tbl_liner_tests")
   
 # Define UI for application that draws a histogram
 
